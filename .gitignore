@@ -27,3 +27,6 @@ ccdaservice/node_modules
 # testing
 .phpunit.result.cache
 coverage/js-unit
+
+#hl7 messages files
+/openemr-data/*

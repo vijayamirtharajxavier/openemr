@@ -13,6 +13,7 @@ services:
     - databasevolume:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
+
   openemr:
     restart: always
     image: openemr/openemr:flex
@@ -68,6 +69,38 @@ services:
       OPENEMR_SETTING_gbl_ldap_dn: 'cn={login},dc=example,dc=org'
     depends_on:
     - mysql
+
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./data/portainer_data:/data"
+
+ 
+  mirthconnect:
+    image: nextgenhealthcare/connect
+    container_name: mirthconnect
+    volumes:
+      - "./mirth-connect/mirth.properties:/opt/mirth-connect/conf/mirth.properties:rw"
+      - "./data/spool_mirth/:/var/spool/mirth/:rw"
+    ports:
+      - "9091:8080"
+      - "9441:8443"
+      - "6661:6661"
+      - "6662:6662"
+      - "6663:6663"
+      - "6664:6664"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+
+
+
   phpmyadmin:
     restart: always
     image: phpmyadmin
@@ -75,6 +108,7 @@ services:
     - 8310:80
     environment:
       PMA_HOSTS: mysql
+
   couchdb:
     restart: always
     image: couchdb
